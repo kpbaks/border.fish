@@ -16,7 +16,24 @@ status is-interactive; or return
 
 set --query BORDER_DISABLE; and return
 
+# set -l delim ━
+# set -l DELIM ─
+# set -l delim ═
+# set -l delim -
+# set -l delim _
 set --query BORDER_DELIM; or set --global BORDER_DELIM ─
+set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION 5000 # ms
+set --query BORDER_MIN_COLUMNS; or set --global BORDER_MIN_COLUMNS 80
+set --query BORDER_ALIGNMENT; or set --global BORDER_ALIGNMENT 0.75
+set -l valid_alignments left center right
+if not contains -- $BORDER_ALIGNMENT $valid_alignments
+    if test $BORDER_ALIGNMENT -lt 0 -o $BORDER_ALIGNMENT -gt 1
+        echo "Invalid border alignment $BORDER_ALIGNMENT"
+        echo "Valid alignments: $valid_alignments"
+        echo "Valid percentage alignments: 0.0 - 1.0"
+        return
+    end
+end
 
 set -l prefix "border.fish"
 
@@ -42,41 +59,11 @@ switch $BORDER_DELIM
         # 	return
 end
 
-set --query BORDER_ALIGNMENT; or set --global BORDER_ALIGNMENT center
-# TODO: percentage alignment e.g. 60% left, 40% right
-set -l valid_alignments left center right
-if not contains -- $BORDER_ALIGNMENT $valid_alignments
-    echo "Invalid border alignment $BORDER_ALIGNMENT"
-    echo "Valid alignments: $valid_alignments"
-    return
-end
-set --query BORDER_ALIGNMENT_PERCENTAGE; or set --global BORDER_ALIGNMENT_PERCENTAGE 0.5
-
-if test $BORDER_ALIGNMENT_PERCENTAGE -lt 0 -o $BORDER_ALIGNMENT_PERCENTAGE -gt 1
-    echo "Invalid border alignment percentage $__BORDER_ALIGNMENT_PERCENTAGE"
-    echo '$__BORDER_ALIGNMENT_PERCENTAGE must be between 0 and 1'
-    return
-end
-
-set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION 5000 # ms
-
-# if not set --query __BORDER_MIN_CMD_DURATION_IGNORE_IF_CMD_IS
-#     set -g __BORDER_MIN_CMD_DURATION_IGNORE_IF_CMD_IS ""
-# end
-
-set --query BORDER_MIN_COLUMNS; or set --global BORDER_MIN_COLUMNS 80
-
-
 function __border_postexec --on-event fish_postexec
     set -l last_status $status
     test $COLUMNS -lt $BORDER_MIN_COLUMNS; and return
 
-    # set -l delim ━
-    # set -l DELIM ─
     set -l delim $BORDER_DELIM
-    # set -l delim ═
-    # set -l delim -
-    # set -l delim _
     set -l PIPESTATUS $pipestatus
     # echo "pipestatus: $PIPESTATUS"
 
@@ -95,10 +82,10 @@ function __border_postexec --on-event fish_postexec
             if test $CMD_DURATION -gt $BORDER_MIN_CMD_DURATION
                 set text (printf " %s " (peopletime $CMD_DURATION))
             end
-        case 1 # general error as defined by the program run
-            set color red
-            set color_text brred
-            set text [$last_status]
+            # case 1 # general error as defined by the program run
+            #     set color red
+            #     set color_text brred
+            #     set text [EXIT CODE $last_status]
         case 2 # misuse of shell builtins (according to Bash documentation)
             set color red
             set color_text brred
@@ -135,18 +122,30 @@ function __border_postexec --on-event fish_postexec
         # If the text is too long, we don't display it, as it would overflow the terminal
         set text_length 0
     end
+    set -l border_length (math "$COLUMNS - $text_length")
 
     set -l border_left_length 0
     set -l border_right_length 0
+    # echo "BORDER_ALIGNMENT: $BORDER_ALIGNMENT"
     switch $BORDER_ALIGNMENT
         case center
-            set border_left_length (math "floor(($COLUMNS - $text_length) / 2)")
-            set border_right_length (math "ceil(($COLUMNS - $text_length) / 2)")
+            set border_left_length (math "floor($border_length / 2)")
+            set border_right_length (math "ceil($border_length / 2)")
         case left
-            set border_right_length (math "$COLUMNS - $text_length")
+            set border_right_length $border_length
         case right
-            set border_left_length (math "$COLUMNS - $text_length")
+            set border_left_length $border_length
+        case '*'
+            # $BORDER_ALIGNMENT == 1 is the same as $BORDER_ALIGNMENT == right
+            # $BORDER_ALIGNMENT == 0 is the same as $BORDER_ALIGNMENT == left
+            # BORDER_ALIGNMENT_PERCENTAGE == 0.5 is the same as $BORDER_ALIGNMENT == center
+            set border_left_length (math "floor($border_length * $BORDER_ALIGNMENT)")
+            set border_right_length (math "$border_length - $border_left_length")
     end
+    # echo "COLUMNS: $COLUMNS"
+    # echo "border_left_length: $border_left_length"
+    # echo "border_right_length: $border_right_length"
+    # echo "text_length: $text_length"
 
     set -l border_left \
         (set_color $color) \
