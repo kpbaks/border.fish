@@ -117,7 +117,7 @@ function __border_postexec --on-event fish_postexec
             set text "EXIT CODE: $last_status"
     end
 
-    set -l text_length (string length $text)
+    set -l text_length (string length "$text")
     if test $text_length -ge $COLUMNS
         # If the text is too long, we don't display it, as it would overflow the terminal
         set text_length 0
@@ -126,7 +126,6 @@ function __border_postexec --on-event fish_postexec
 
     set -l border_left_length 0
     set -l border_right_length 0
-    # echo "BORDER_ALIGNMENT: $BORDER_ALIGNMENT"
     switch $BORDER_ALIGNMENT
         case center
             set border_left_length (math "floor($border_length / 2)")
@@ -142,10 +141,6 @@ function __border_postexec --on-event fish_postexec
             set border_left_length (math "floor($border_length * $BORDER_ALIGNMENT)")
             set border_right_length (math "$border_length - $border_left_length")
     end
-    # echo "COLUMNS: $COLUMNS"
-    # echo "border_left_length: $border_left_length"
-    # echo "border_right_length: $border_right_length"
-    # echo "text_length: $text_length"
 
     set -l border_left \
         (set_color $color) \
