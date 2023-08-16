@@ -16,13 +16,24 @@ function _border_install --on-event border_install
     set -l yellow (set_color yellow)
     set -l blue (set_color blue)
     set -l reset (set_color normal)
+    set -l count 40
+    set -l indent (string repeat --count 4 --no-newline " ")
+    printf "%s %sborder.fish%s %s\n" \
+        (string repeat --count $count --no-newline "-") \
+        $blue $reset \
+        (string repeat --count $count --no-newline "-")
+
     printf "The following variables are available for customization:\n"
     printf "%sBORDER_DELIM%s %s\n" $yellow $reset $__BORDER_DELIM_DEFAULT
+    printf "%s(%sNOTE:%s must have a length of 1)\n" $indent $blue $reset
     printf "%sBORDER_MIN_CMD_DURATION%s %s\n" $yellow $reset $__BORDER_MIN_CMD_DURATION_DEFAULT
+    printf "%s(%sNOTE:%s unit is milliseconds and must be a positive integer)\n" $indent $blue $reset
     printf "%sBORDER_MIN_COLUMNS%s %s\n" $yellow $reset $__BORDER_MIN_COLUMNS_DEFAULT
+    printf "%s(%sNOTE:%s must be a positive integer)\n" $indent $blue $reset
     printf "%sBORDER_ALIGNMENT%s %s\n" $yellow $reset $__BORDER_ALIGNMENT_DEFAULT
-    printf "\n"
-    printf "if %sBORDER_DISABLE%s is set, the plugin will be disabled\n" $yellow $reset
+    printf "%s(%sNOTE:%s must be one of: left, center, right, or a percentage between 0.0 and 1.0)\n" $indent $blue $reset
+    # printf "\n"
+    # printf "If %sBORDER_DISABLE%s is set, the plugin will be disabled\n" $yellow $reset
 end
 
 function _border_update --on-event border_update
@@ -35,7 +46,7 @@ end
 
 status is-interactive; or return
 
-set --query BORDER_DISABLE; and return
+# set --query BORDER_DISABLE; and return
 
 set --query BORDER_DELIM; or set --global BORDER_DELIM $__BORDER_DELIM_DEFAULT
 set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION $__BORDER_MIN_CMD_DURATION_DEFAULT
