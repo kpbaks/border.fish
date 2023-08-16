@@ -1,7 +1,28 @@
+# set -l delim ━
+# set -l DELIM ─
+# set -l delim ═
+# set -l delim -
+# set -l delim _
+set --global __BORDER_DELIM_DEFAULT ─
+set --global __BORDER_MIN_CMD_DURATION_DEFAULT 5000 # ms
+set --global __BORDER_MIN_COLUMNS_DEFAULT 80
+set --global __BORDER_ALIGNMENT_DEFAULT 0.5
+
 function _border_install --on-event border_install
     # Set universal variables, create bindings, and other initialization logic.
     contains -- kpbaks/peopletime.fish (fisher list)
     or fisher install kpbaks/peopletime.fish
+
+    set -l yellow (set_color yellow)
+    set -l blue (set_color blue)
+    set -l reset (set_color normal)
+    printf "The following variables are available for customization:\n"
+    printf "%sBORDER_DELIM%s %s\n" $yellow $reset $__BORDER_DELIM_DEFAULT
+    printf "%sBORDER_MIN_CMD_DURATION%s %s\n" $yellow $reset $__BORDER_MIN_CMD_DURATION_DEFAULT
+    printf "%sBORDER_MIN_COLUMNS%s %s\n" $yellow $reset $__BORDER_MIN_COLUMNS_DEFAULT
+    printf "%sBORDER_ALIGNMENT%s %s\n" $yellow $reset $__BORDER_ALIGNMENT_DEFAULT
+    printf "\n"
+    printf "if %sBORDER_DISABLE%s is set, the plugin will be disabled\n" $yellow $reset
 end
 
 function _border_update --on-event border_update
@@ -16,15 +37,11 @@ status is-interactive; or return
 
 set --query BORDER_DISABLE; and return
 
-# set -l delim ━
-# set -l DELIM ─
-# set -l delim ═
-# set -l delim -
-# set -l delim _
-set --query BORDER_DELIM; or set --global BORDER_DELIM ─
-set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION 5000 # ms
-set --query BORDER_MIN_COLUMNS; or set --global BORDER_MIN_COLUMNS 80
-set --query BORDER_ALIGNMENT; or set --global BORDER_ALIGNMENT 0.75
+set --query BORDER_DELIM; or set --global BORDER_DELIM $__BORDER_DELIM_DEFAULT
+set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION $__BORDER_MIN_CMD_DURATION_DEFAULT
+set --query BORDER_MIN_COLUMNS; or set --global BORDER_MIN_COLUMNS $__BORDER_MIN_COLUMNS_DEFAULT
+set --query BORDER_ALIGNMENT; or set --global BORDER_ALIGNMENT $__BORDER_ALIGNMENT_DEFAULT
+
 set -l valid_alignments left center right
 if not contains -- $BORDER_ALIGNMENT $valid_alignments
     if test $BORDER_ALIGNMENT -lt 0 -o $BORDER_ALIGNMENT -gt 1
