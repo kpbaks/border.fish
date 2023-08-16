@@ -8,7 +8,7 @@ set --global __BORDER_MIN_CMD_DURATION_DEFAULT 5000 # ms
 set --global __BORDER_MIN_COLUMNS_DEFAULT 80
 set --global __BORDER_ALIGNMENT_DEFAULT 0.5
 
-function _border_install --on-event border_install
+function _border.fish_install --on-event border.fish_install
     # Set universal variables, create bindings, and other initialization logic.
     contains -- kpbaks/peopletime.fish (fisher list)
     or fisher install kpbaks/peopletime.fish
@@ -32,21 +32,17 @@ function _border_install --on-event border_install
     printf "%s(%sNOTE:%s must be a positive integer)\n" $indent $blue $reset
     printf "%sBORDER_ALIGNMENT%s %s\n" $yellow $reset $__BORDER_ALIGNMENT_DEFAULT
     printf "%s(%sNOTE:%s must be one of: left, center, right, or a percentage between 0.0 and 1.0)\n" $indent $blue $reset
-    # printf "\n"
-    # printf "If %sBORDER_DISABLE%s is set, the plugin will be disabled\n" $yellow $reset
 end
 
-function _border_update --on-event border_update
+function _border.fish_update --on-event border.fish_update
     # Migrate resources, print warnings, and other update logic.
 end
 
-function _border_uninstall --on-event border_uninstall
+function _border.fish_uninstall --on-event border.fish_uninstall
     # Erase "private" functions, variables, bindings, and other uninstall logic.
 end
 
 status is-interactive; or return
-
-# set --query BORDER_DISABLE; and return
 
 set --query BORDER_DELIM; or set --global BORDER_DELIM $__BORDER_DELIM_DEFAULT
 set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION $__BORDER_MIN_CMD_DURATION_DEFAULT
@@ -89,10 +85,10 @@ end
 
 function __border_postexec --on-event fish_postexec
     set -l last_status $status
+    set -l last_pipestatus $pipestatus
     test $COLUMNS -lt $BORDER_MIN_COLUMNS; and return
 
     set -l delim $BORDER_DELIM
-    set -l PIPESTATUS $pipestatus
     # echo "pipestatus: $PIPESTATUS"
 
     set -l color normal
