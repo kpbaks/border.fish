@@ -27,7 +27,7 @@ function _border.fish_install --on-event _border_install
         $blue $reset \
         (string repeat --count $count --no-newline "-")
 
-    printf "The following variables are available for customization:\n"
+    printf "The following variables are available for customization: (default values shown)\n"
     printf "%sBORDER_DELIM%s %s\n" $yellow $reset $__BORDER_DELIM_DEFAULT
     printf "%s(%sNOTE:%s must have a length of 1)\n" $indent $blue $reset
     printf "%sBORDER_MIN_CMD_DURATION%s %s\n" $yellow $reset $__BORDER_MIN_CMD_DURATION_DEFAULT
