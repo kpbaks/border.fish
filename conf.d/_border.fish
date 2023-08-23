@@ -8,7 +8,7 @@ set --global __BORDER_MIN_CMD_DURATION_DEFAULT 5000 # ms
 set --global __BORDER_MIN_COLUMNS_DEFAULT 80
 set --global __BORDER_ALIGNMENT_DEFAULT 0.5
 
-function _border.fish_install --on-event border.fish_install
+function _border.fish_install --on-event _border_install
     # Set universal variables, create bindings, and other initialization logic.
     contains -- kpbaks/peopletime.fish (fisher list)
     or fisher install kpbaks/peopletime.fish
@@ -32,13 +32,16 @@ function _border.fish_install --on-event border.fish_install
     printf "%s(%sNOTE:%s must be a positive integer)\n" $indent $blue $reset
     printf "%sBORDER_ALIGNMENT%s %s\n" $yellow $reset $__BORDER_ALIGNMENT_DEFAULT
     printf "%s(%sNOTE:%s must be one of: left, center, right, or a percentage between 0.0 and 1.0)\n" $indent $blue $reset
+    printf "%sBORDER_COLOR%s %s\n" $yellow $reset "#808080"
+	printf "%sBORDER_COLOR_ERROR%s %s\n" $yellow $reset red
+	printf "%sBORDER_COLOR_NOT_FOUND%s %s\n" $yellow $reset yellow
 end
 
-function _border.fish_update --on-event border.fish_update
+function _border.fish_update --on-event _border_update
     # Migrate resources, print warnings, and other update logic.
 end
 
-function _border.fish_uninstall --on-event border.fish_uninstall
+function _border.fish_uninstall --on-event _border_uninstall
     # Erase "private" functions, variables, bindings, and other uninstall logic.
 end
 
@@ -48,6 +51,11 @@ set --query BORDER_DELIM; or set --global BORDER_DELIM $__BORDER_DELIM_DEFAULT
 set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION $__BORDER_MIN_CMD_DURATION_DEFAULT
 set --query BORDER_MIN_COLUMNS; or set --global BORDER_MIN_COLUMNS $__BORDER_MIN_COLUMNS_DEFAULT
 set --query BORDER_ALIGNMENT; or set --global BORDER_ALIGNMENT $__BORDER_ALIGNMENT_DEFAULT
+set --query BORDER_COLOR; or set --global BORDER_COLOR "#808080"
+set --query BORDER_COLOR_ERROR; or set --global BORDER_COLOR_ERROR red
+set --query BORDER_COLOR_NOT_FOUND; or set --global BORDER_COLOR_NOT_FOUND yellow
+set --query BORDER_COLOR_TIME; or set --global BORDER_COLOR_TIME magenta
+
 
 set -l valid_alignments left center right
 if not contains -- $BORDER_ALIGNMENT $valid_alignments
@@ -100,7 +108,7 @@ function __border_postexec --on-event fish_postexec
     # TODO: add rest of signals
     switch $last_status
         case 0
-            set color 808080
+            set color $BORDER_COLOR
             set -l orange "#FFA500"
             set color_text $orange
             if test $CMD_DURATION -gt $BORDER_MIN_CMD_DURATION
@@ -111,32 +119,32 @@ function __border_postexec --on-event fish_postexec
             #     set color_text brred
             #     set text [EXIT CODE $last_status]
         case 2 # misuse of shell builtins (according to Bash documentation)
-            set color red
+            set color $BORDER_COLOR_ERROR
             set color_text brred
             set text [$last_status invalid command invocation]
         case 127
-            set color yellow
+            set color $BORDER_COLOR_NOT_FOUND
             set color_text bryellow
             set text " COMMAND NOT FOUND "
         case 130 # SIGINT (Ctrl-C) 128 + 2
-            set color red
+            set color $BORDER_COLOR_ERROR
             set color_text brred
             set text [SIGINT]
         case 131 # SIGQUIT (Ctrl-\) 128 + 3
-            set color red
+            set color $BORDER_COLOR_ERROR
             set color_text brred
             set text [SIGQUIT]
         case 137 # SIGKILL (kill -9) 128 + 9
-            set color red
+            set color $BORDER_COLOR_ERROR
             set color_text brred
             set text [SIGKILL]
         case 139 # SIGSEGV (Segmentation fault) 128 + 11
-            set color red
+            set color $BORDER_COLOR_ERROR
             set color_text brred
             set text [SIGSEGV]
 
         case '*'
-            set color red
+            set color $BORDER_COLOR_ERROR
             set color_text brred
             set text "EXIT CODE: $last_status"
     end
