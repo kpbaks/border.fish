@@ -7,6 +7,10 @@ set --global __BORDER_DELIM_DEFAULT ─
 set --global __BORDER_MIN_CMD_DURATION_DEFAULT 5000 # ms
 set --global __BORDER_MIN_COLUMNS_DEFAULT 80
 set --global __BORDER_ALIGNMENT_DEFAULT 0.5
+set --global __BORDER_COLOR_DEFAULT "#808080"
+set --global __BORDER_COLOR_ERROR_DEFAULT red
+set --global __BORDER_COLOR_NOT_FOUND_DEFAULT yellow
+set --global __BORDER_COLOR_TIME_DEFAULT magenta
 
 function _border.fish_install --on-event _border_install
     # Set universal variables, create bindings, and other initialization logic.
@@ -32,9 +36,11 @@ function _border.fish_install --on-event _border_install
     printf "%s(%sNOTE:%s must be a positive integer)\n" $indent $blue $reset
     printf "%sBORDER_ALIGNMENT%s %s\n" $yellow $reset $__BORDER_ALIGNMENT_DEFAULT
     printf "%s(%sNOTE:%s must be one of: left, center, right, or a percentage between 0.0 and 1.0)\n" $indent $blue $reset
-    printf "%sBORDER_COLOR%s %s\n" $yellow $reset "#808080"
-	printf "%sBORDER_COLOR_ERROR%s %s\n" $yellow $reset red
-	printf "%sBORDER_COLOR_NOT_FOUND%s %s\n" $yellow $reset yellow
+    printf "%sBORDER_COLOR%s           %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_DEFAULT) $__BORDER_COLOR_DEFAULT (set_color normal)
+    printf "%sBORDER_COLOR_ERROR%s     %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_ERROR_DEFAULT) $__BORDER_COLOR_ERROR_DEFAULT (set_color normal)
+    printf "%sBORDER_COLOR_NOT_FOUND%s %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_NOT_FOUND_DEFAULT) $__BORDER_COLOR_NOT_FOUND_DEFAULT (set_color normal)
+    # printf "%sBORDER_COLOR_TIME%s      %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_TIME_DEFAULT) $__BORDER_COLOR_TIME_DEFAULT (set_color normal)
+    printf "%s(%sNOTE:%s must be colors supported by `set_color)\n" $indent $blue $reset
 end
 
 function _border.fish_update --on-event _border_update
@@ -51,10 +57,10 @@ set --query BORDER_DELIM; or set --global BORDER_DELIM $__BORDER_DELIM_DEFAULT
 set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION $__BORDER_MIN_CMD_DURATION_DEFAULT
 set --query BORDER_MIN_COLUMNS; or set --global BORDER_MIN_COLUMNS $__BORDER_MIN_COLUMNS_DEFAULT
 set --query BORDER_ALIGNMENT; or set --global BORDER_ALIGNMENT $__BORDER_ALIGNMENT_DEFAULT
-set --query BORDER_COLOR; or set --global BORDER_COLOR "#808080"
-set --query BORDER_COLOR_ERROR; or set --global BORDER_COLOR_ERROR red
-set --query BORDER_COLOR_NOT_FOUND; or set --global BORDER_COLOR_NOT_FOUND yellow
-set --query BORDER_COLOR_TIME; or set --global BORDER_COLOR_TIME magenta
+set --query BORDER_COLOR; or set --global BORDER_COLOR $__BORDER_COLOR_DEFAULT
+set --query BORDER_COLOR_ERROR; or set --global BORDER_COLOR_ERROR $__BORDER_COLOR_ERROR_DEFAULT
+set --query BORDER_COLOR_NOT_FOUND; or set --global BORDER_COLOR_NOT_FOUND $__BORDER_COLOR_NOT_FOUND_DEFAULT
+set --query BORDER_COLOR_TIME; or set --global BORDER_COLOR_TIME $__BORDER_COLOR_TIME_DEFAULT
 
 
 set -l valid_alignments left center right
