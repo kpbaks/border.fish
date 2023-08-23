@@ -40,7 +40,7 @@ function _border.fish_install --on-event _border_install
     printf "%sBORDER_COLOR_ERROR%s     %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_ERROR_DEFAULT) $__BORDER_COLOR_ERROR_DEFAULT (set_color normal)
     printf "%sBORDER_COLOR_NOT_FOUND%s %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_NOT_FOUND_DEFAULT) $__BORDER_COLOR_NOT_FOUND_DEFAULT (set_color normal)
     # printf "%sBORDER_COLOR_TIME%s      %s%s%s\n" $yellow $reset (set_color $__BORDER_COLOR_TIME_DEFAULT) $__BORDER_COLOR_TIME_DEFAULT (set_color normal)
-    printf "%s(%sNOTE:%s must be colors supported by `set_color)\n" $indent $blue $reset
+    printf "%s(%sNOTE:%s must be colors supported by `set_color`)\n" $indent $blue $reset
 end
 
 function _border.fish_update --on-event _border_update
