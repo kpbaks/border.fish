@@ -1,8 +1,8 @@
-# set -l delim ━
-# set -l DELIM ─
-# set -l delim ═
-# set -l delim -
-# set -l delim _
+# set --local delim ━
+# set --local DELIM ─
+# set --local delim ═
+# set --local delim -
+# set --local delim _
 set --global __BORDER_DELIM_DEFAULT ─
 set --global __BORDER_MIN_CMD_DURATION_DEFAULT 5000 # ms
 set --global __BORDER_MIN_COLUMNS_DEFAULT 80
@@ -12,16 +12,16 @@ set --global __BORDER_COLOR_ERROR_DEFAULT red
 set --global __BORDER_COLOR_NOT_FOUND_DEFAULT yellow
 set --global __BORDER_COLOR_TIME_DEFAULT magenta
 
-function _border.fish_install --on-event _border_install
+function __border.fish::install --on-event _border_install
     # Set universal variables, create bindings, and other initialization logic.
     contains -- kpbaks/peopletime.fish (fisher list)
     or fisher install kpbaks/peopletime.fish
 
-    set -l yellow (set_color yellow)
-    set -l blue (set_color blue)
-    set -l reset (set_color normal)
-    set -l count 40
-    set -l indent (string repeat --count 4 --no-newline " ")
+    set --local yellow (set_color yellow)
+    set --local blue (set_color blue)
+    set --local reset (set_color normal)
+    set --local count 40
+    set --local indent (string repeat --count 4 --no-newline " ")
     printf "%s %sborder.fish%s %s\n" \
         (string repeat --count $count --no-newline "-") \
         $blue $reset \
@@ -43,11 +43,11 @@ function _border.fish_install --on-event _border_install
     printf "%s(%sNOTE:%s must be colors supported by `set_color`)\n" $indent $blue $reset
 end
 
-function _border.fish_update --on-event _border_update
+function __border.fish::update --on-event _border_update
     # Migrate resources, print warnings, and other update logic.
 end
 
-function _border.fish_uninstall --on-event _border_uninstall
+function __border.fish::uninstall --on-event _border_uninstall
     # Erase "private" functions, variables, bindings, and other uninstall logic.
 end
 
@@ -62,8 +62,7 @@ set --query BORDER_COLOR_ERROR; or set --global BORDER_COLOR_ERROR $__BORDER_COL
 set --query BORDER_COLOR_NOT_FOUND; or set --global BORDER_COLOR_NOT_FOUND $__BORDER_COLOR_NOT_FOUND_DEFAULT
 set --query BORDER_COLOR_TIME; or set --global BORDER_COLOR_TIME $__BORDER_COLOR_TIME_DEFAULT
 
-
-set -l valid_alignments left center right
+set --local valid_alignments left center right
 if not contains -- $BORDER_ALIGNMENT $valid_alignments
     if test $BORDER_ALIGNMENT -lt 0 -o $BORDER_ALIGNMENT -gt 1
         echo "Invalid border alignment $BORDER_ALIGNMENT"
@@ -73,41 +72,41 @@ if not contains -- $BORDER_ALIGNMENT $valid_alignments
     end
 end
 
-set -l prefix "border.fish"
+set --local prefix "border.fish"
 
 # TODO: use this
 switch $BORDER_DELIM
     case ━
-        set -g __BORDER_TEE_RIGHT ''
-        set -g __BORDER_TEE_LEFT ''
+        set --global __BORDER_TEE_RIGHT ''
+        set --global __BORDER_TEE_LEFT ''
     case ─
-        set -g __BORDER_TEE_RIGHT ''
-        set -g __BORDER_TEE_LEFT ''
+        set --global __BORDER_TEE_RIGHT ''
+        set --global __BORDER_TEE_LEFT ''
     case ═
-        set -g __BORDER_TEE_RIGHT ''
-        set -g __BORDER_TEE_LEFT ''
+        set --global __BORDER_TEE_RIGHT ''
+        set --global __BORDER_TEE_LEFT ''
     case -
-        set -g __BORDER_TEE_RIGHT '|'
-        set -g __BORDER_TEE_LEFT '|'
+        set --global __BORDER_TEE_RIGHT '|'
+        set --global __BORDER_TEE_LEFT '|'
     case _
-        set -g __BORDER_TEE_RIGHT '|'
-        set -g __BORDER_TEE_LEFT '|'
+        set --global __BORDER_TEE_RIGHT '|'
+        set --global __BORDER_TEE_LEFT '|'
         # case *
         # 	echo "Invalid border delimiter $BORDER_DELIM"
         # 	return
 end
 
 function __border_postexec --on-event fish_postexec
-    set -l last_status $status
-    set -l last_pipestatus $pipestatus
+    set --local last_status $status
+    set --local last_pipestatus $pipestatus
     test $COLUMNS -lt $BORDER_MIN_COLUMNS; and return
 
-    set -l delim $BORDER_DELIM
+    set --local delim $BORDER_DELIM
     # echo "pipestatus: $PIPESTATUS"
 
-    set -l color normal
-    set -l color_text normal
-    set -l text ""
+    set --local color normal
+    set --local color_text normal
+    set --local text ""
 
     # TODO: handle pipe status
 
@@ -115,8 +114,9 @@ function __border_postexec --on-event fish_postexec
     switch $last_status
         case 0
             set color $BORDER_COLOR
-            set -l orange "#FFA500"
-            set color_text $orange
+            set --local orange "#FFA500"
+            # set --local cyan "#00FFFF"
+            set color_text cyan
             if test $CMD_DURATION -gt $BORDER_MIN_CMD_DURATION
                 set text (printf " %s " (peopletime $CMD_DURATION))
             end
@@ -127,7 +127,8 @@ function __border_postexec --on-event fish_postexec
         case 2 # misuse of shell builtins (according to Bash documentation)
             set color $BORDER_COLOR_ERROR
             set color_text brred
-            set text [$last_status invalid command invocation]
+            # TODO: <kpbaks 2023-09-29 12:34:34> append `command --help` as a hint
+            set text " EXIT CODE: $last_status INVALID COMMAND INVOCATION "
         case 127
             set color $BORDER_COLOR_NOT_FOUND
             set color_text bryellow
@@ -152,18 +153,18 @@ function __border_postexec --on-event fish_postexec
         case '*'
             set color $BORDER_COLOR_ERROR
             set color_text brred
-            set text "EXIT CODE: $last_status"
+            set text " EXIT CODE: $last_status "
     end
 
-    set -l text_length (string length "$text")
+    set --local text_length (string length "$text")
     if test $text_length -ge $COLUMNS
         # If the text is too long, we don't display it, as it would overflow the terminal
         set text_length 0
     end
-    set -l border_length (math "$COLUMNS - $text_length")
+    set --local border_length (math "$COLUMNS - $text_length")
 
-    set -l border_left_length 0
-    set -l border_right_length 0
+    set --local border_left_length 0
+    set --local border_right_length 0
     switch $BORDER_ALIGNMENT
         case center
             set border_left_length (math "floor($border_length / 2)")
@@ -180,12 +181,12 @@ function __border_postexec --on-event fish_postexec
             set border_right_length (math "$border_length - $border_left_length")
     end
 
-    set -l border_left \
+    set --local border_left \
         (set_color $color) \
         (string repeat --no-newline -n $border_left_length $delim) \
         (set_color normal)
 
-    set -l border_right \
+    set --local border_right \
         (set_color $color) \
         (string repeat --no-newline -n $border_right_length $delim) \
         (set_color normal)
