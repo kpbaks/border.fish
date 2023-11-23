@@ -156,6 +156,15 @@ function __border_postexec --on-event fish_postexec
             set text " EXIT CODE: $last_status "
     end
 
+    # If the border alignment is left/0.0 or right/1.0 then we want to remove the
+    # left or right whitespace padding respectively of the text
+    switch $BORDER_ALIGNMENT
+        case left 0.0 0
+            set text (string replace --regex "^\s+" "" -- $text)
+        case right 1.0 1
+            set text (string replace --regex "\s+\$" "" -- $text)
+    end
+
     set --local text_length (string length "$text")
     if test $text_length -ge $COLUMNS
         # If the text is too long, we don't display it, as it would overflow the terminal
