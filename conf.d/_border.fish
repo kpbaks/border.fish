@@ -72,8 +72,6 @@ if not contains -- $BORDER_ALIGNMENT $valid_alignments
     end
 end
 
-set --local prefix "border.fish"
-
 # TODO: use this
 switch $BORDER_DELIM
     case ━
@@ -98,6 +96,7 @@ end
 
 function __border_postexec --on-event fish_postexec
     set --local last_status $status
+    # TODO: use this
     set --local last_pipestatus $pipestatus
     test $COLUMNS -lt $BORDER_MIN_COLUMNS; and return
 

@@ -32,3 +32,7 @@ The following variables can be changed to customize the plugin:
 <!-- | `BORDER_STRFTIME`         |     `%k:%M:%S`      | The format string used to display the duration of the previous command. If the variable is not defined then no time is shown in the border. | Must be a valid format string for `date +"<format-str>"`                                           | -->
 <!-- | `BORDER_COLOR_TIME` | `magenta` | The color of the time in the border. | Must be a valid color name supported by `set_color` | -->
 
+## TODO
+
+- [ ] Show `$pipestatus` in the border
+- [ ] Show the current time in border with a configurable strftime configuration option.
