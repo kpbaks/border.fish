@@ -1,9 +1,14 @@
 # border.fish
 
-A [fish](https://fishshell.com/) plugin that draws a border after each run command. \
-If the previous command exceeds `BORDER_MIN_CMD_DURATION` milliseconds, the duration of the command will be displayed in the border. \
-If the previous command exited with a non-zero status, the border will be drawn in red, and the exit status will be displayed in the border. \
-If the previous command was not found in the `$PATH`, the border will be drawn in yellow.
+A [fish](https://fishshell.com/) plugin that draws a border after each command.
+- If the previous command exceeds `BORDER_MIN_CMD_DURATION` milliseconds, the duration of the command will be displayed in the border.
+- If the previous command exited with a non-zero status, the border will be drawn in red, and the exit status will be displayed in the border.
+- If the previous command was not found in the `$PATH`, the border will be drawn in yellow.
+
+
+## Example screenshot
+
+![image](https://github.com/kpbaks/border.fish/assets/57013304/9d4f28c6-7a34-477a-baed-fae613449164)
 
 ## Installation
 
@@ -27,6 +32,3 @@ The following variables can be changed to customize the plugin:
 <!-- | `BORDER_STRFTIME`         |     `%k:%M:%S`      | The format string used to display the duration of the previous command. If the variable is not defined then no time is shown in the border. | Must be a valid format string for `date +"<format-str>"`                                           | -->
 <!-- | `BORDER_COLOR_TIME` | `magenta` | The color of the time in the border. | Must be a valid color name supported by `set_color` | -->
 
-## Screenshot
-
-TODO
