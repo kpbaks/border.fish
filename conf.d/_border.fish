@@ -43,15 +43,15 @@ function __border.fish::install --on-event _border_install
     printf "%s(%sNOTE:%s must be colors supported by `set_color`)\n" $indent $blue $reset
 end
 
-function __border.fish::update --on-event _border_update
+function __border.fish::on::update --on-event border_update
     # Migrate resources, print warnings, and other update logic.
 end
 
-function __border.fish::uninstall --on-event _border_uninstall
+function __border.fish::on::uninstall --on-event border_uninstall
     # Erase "private" functions, variables, bindings, and other uninstall logic.
 end
 
-status is-interactive; or return
+status is-interactive; or return 0
 
 set --query BORDER_DELIM; or set --global BORDER_DELIM $__BORDER_DELIM_DEFAULT
 set --query BORDER_MIN_CMD_DURATION; or set --global BORDER_MIN_CMD_DURATION $__BORDER_MIN_CMD_DURATION_DEFAULT
@@ -110,6 +110,7 @@ function __border_postexec --on-event fish_postexec
     # TODO: handle pipe status
 
     # TODO: add rest of signals
+    # TODO: use `fish_status_to_signal` to convert exit code -> signal name
     switch $last_status
         case 0
             set color $BORDER_COLOR
