@@ -7,7 +7,8 @@ set --global __BORDER_DELIM_DEFAULT ─
 set --global __BORDER_MIN_CMD_DURATION_DEFAULT 5000 # ms
 set --global __BORDER_MIN_COLUMNS_DEFAULT 80
 set --global __BORDER_ALIGNMENT_DEFAULT 0.5
-set --global __BORDER_COLOR_DEFAULT "#808080"
+set --global __BORDER_COLOR_DEFAULT "#414868"
+# set --global __BORDER_COLOR_DEFAULT "#808080"
 set --global __BORDER_COLOR_ERROR_DEFAULT red
 set --global __BORDER_COLOR_NOT_FOUND_DEFAULT yellow
 set --global __BORDER_COLOR_TIME_DEFAULT magenta
@@ -43,13 +44,13 @@ function __border.fish::install --on-event _border_install
     printf "%s(%sNOTE:%s must be colors supported by `set_color`)\n" $indent $blue $reset
 end
 
-function __border.fish::on::update --on-event border_update
-    # Migrate resources, print warnings, and other update logic.
-end
+# function __border.fish::on::update --on-event border_update
+#     # Migrate resources, print warnings, and other update logic.
+# end
 
-function __border.fish::on::uninstall --on-event border_uninstall
-    # Erase "private" functions, variables, bindings, and other uninstall logic.
-end
+# function __border.fish::on::uninstall --on-event border_uninstall
+#     # Erase "private" functions, variables, bindings, and other uninstall logic.
+# end
 
 status is-interactive; or return 0
 
