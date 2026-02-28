@@ -9,6 +9,15 @@
       url = "github:cachix/git-hooks.nix";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    peopletime-fish = {
+      url = "github:kpbaks/peopletime.fish";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        git-hooks-nix.follows = "git-hooks-nix";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+    };
     treefmt-nix = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:numtide/treefmt-nix";
@@ -36,6 +45,7 @@
           config,
           pkgs,
           lib,
+          inputs',
           ...
         }:
         {
@@ -77,6 +87,14 @@
             version = "unknown";
 
             src = lib.cleanSource ./.;
+
+            buildInputs = [ inputs'.peopletime-fish.packages.default ];
+
+            postInstall = ''
+              mkdir -p $out/share/fish/vendor_functions.d/
+              cp -r ${inputs'.peopletime-fish.packages.default}/share/fish/vendor_functions.d/* \
+                "$out/share/fish/vendor_functions.d/"
+            '';
 
             meta = {
               description = "border.fish";
