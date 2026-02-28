@@ -1,1 +1,6 @@
 errno
+# Nix
+/.pre-commit-config.yaml
+/.direnv/
+/result
+/.pre-commit-config.yaml
